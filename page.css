@@ -1,0 +1,93 @@
+html, body, #experience { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+body { background: #000; font-family: Arial, sans-serif; }
+#error { position: fixed; z-index: 10; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: min(32rem, 80vw); padding: 1.25rem; border-radius: .5rem; color: #fff; background: #292929; line-height: 1.5; overflow-wrap: anywhere; }
+/* the editor's select-toolbar, measured on superspl.at */
+.sse-viewer .sse-controlsWrap > .spirulaMeasureBar { align-self: center; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; box-sizing: border-box; min-height: 54px; max-width: 100%; margin-bottom: 12px; padding: 8px 16px; border-radius: 8px; color: #aaa; background: #333; font-size: 12px; }
+.sse-viewer .spirulaMeasureBar > .spirulaMeasureLength { display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; width: 90px; height: 24px; padding: 0 6px 0 5px; border: 1px solid #202020; border-radius: 2px; background: #282828; font-family: Monaco, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+.sse-viewer .spirulaMeasureBar > .spirulaMeasureLength.empty { opacity: .5; }
+.sse-viewer .spirulaMeasureBar > button { height: 28px; padding: 0 12px; border: 1px solid #202020; border-radius: 2px; color: #aaa; background: #282828; font: inherit; cursor: pointer; }
+.sse-viewer .spirulaMeasureBar > button:hover:not(:disabled) { color: #fff; }
+.sse-viewer .spirulaMeasureBar > button:disabled { opacity: .4; cursor: default; }
+.sse-viewer .spirulaMeasureOverlay { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.sse-viewer .spirulaMeasureOverlay line.outline { stroke: rgba(0, 0, 0, .35); stroke-width: 3.5; stroke-linecap: round; }
+.sse-viewer .spirulaMeasureOverlay line.line { stroke: #fff; stroke-width: 1.5; stroke-linecap: round; }
+.sse-viewer .spirulaMeasureOverlay g > line { stroke-width: 1; }
+.sse-viewer .spirulaMeasureOverlay .spirulaMeasurePiece > line { stroke-linecap: butt; }
+/* behind the splats, faded as the viewer's occluded hotspots */
+.sse-viewer .spirulaMeasurePiece, .sse-viewer .spirulaMeasurePoint, .sse-viewer .spirulaMeasureLabels > div { transition: opacity 300ms cubic-bezier(0.45, 0, 0.55, 1); }
+.sse-viewer .spirulaMeasureOverlay .occluded, .sse-viewer .spirulaMeasureLabels > .occluded { opacity: 0.4; transition-duration: 450ms; }
+.sse-viewer .spirulaMeasurePoint.occluded:hover { opacity: 1; }
+.sse-viewer .spirulaMeasurePoint .dot { fill: var(--sse-accent); stroke: #fff; stroke-width: 2; }
+.sse-viewer .spirulaMeasurePoint, .sse-viewer .spirulaGizmo > g { cursor: pointer; touch-action: none; }
+.sse-viewer .spirulaMeasurePoint .hit { fill: transparent; pointer-events: all; }
+.sse-viewer .spirulaMeasureLabels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.sse-viewer .spirulaMeasureLabels > div { position: absolute; left: 0; top: 0; padding: 4px 12px; border-radius: 999px; color: #fff; background: rgba(40, 40, 40, .8); font-size: 13px; line-height: 16px; white-space: nowrap; font-variant-numeric: tabular-nums; pointer-events: auto; }
+/* the delete button under a hovered or selected label; its ::before bridges the gap so the hover holds */
+.sse-viewer .spirulaMeasureLabels > div:is(:hover, .selected) { opacity: 1; }
+.sse-viewer .spirulaMeasureLabels button { display: none; position: absolute; top: calc(100% + 4px); left: 50%; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 6px; color: #aaa; background: rgba(40, 40, 40, .8); transform: translateX(-50%); cursor: pointer; }
+.sse-viewer .spirulaMeasureLabels button::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 4px; }
+.sse-viewer .spirulaMeasureLabels > div:is(:hover, .selected) > button { display: flex; }
+.sse-viewer .spirulaMeasureLabels button:hover { color: #fff; }
+/* the crosshair in the buttons' accent (measure.js draws it), over the one the viewer sets inline while measuring */
+.sse-viewer canvas.spirulaMeasuring { cursor: var(--spirula-crosshair), crosshair !important; }
+/* the viewer's settings toggle (viewer.css .sse-toggleSwitch), outside its settings panel */
+.sse-viewer .spirulaMeasureBar > .spirulaMeasureHide { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.sse-viewer .spirulaMeasureBar > .spirulaMeasureHide:hover { color: #fff; }
+.sse-viewer .spirulaMeasureHide .sse-toggleTrack { position: relative; width: 36px; height: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, .15); transition: background-color 200ms ease; }
+.sse-viewer .spirulaMeasureHide .sse-toggleThumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background-color: #777; transition: transform 200ms ease, background-color 200ms ease; }
+.sse-viewer .spirulaMeasureHide .sse-active .sse-toggleTrack { background-color: color-mix(in srgb, var(--sse-accent) 35%, transparent); }
+.sse-viewer .spirulaMeasureHide .sse-active .sse-toggleThumb { transform: translateX(16px); background-color: var(--sse-accent); }
+.sse-viewer .spirulaGizmo .hit { fill: transparent; stroke: transparent; pointer-events: all; }
+.sse-viewer .spirulaGizmo polygon, .sse-viewer .spirulaGizmo circle { pointer-events: all; }
+.sse-viewer .spirulaGizmo line:not(.hit) { pointer-events: none; }
+/* the height clip: a glass panel as the viewer's settings panel, its track as the timeline's, plain handles in the buttons' accent */
+.sse-viewer .sse-ui > .spirulaClip { position: absolute; right: max(16px, env(safe-area-inset-right)); top: 50%; transform: translateY(-50%); box-sizing: border-box; width: 40px; height: min(320px, 50%); padding: 18px 0; border: 1px solid rgba(255, 255, 255, .08); border-radius: 16px; background-color: color-mix(in srgb, var(--sse-bkg) 50%, transparent); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); touch-action: none; }
+.sse-viewer .sse-ui:has(> .sse-settingsPanel:not(.sse-hidden), > .sse-controlsHint:not(.sse-hidden)) > .spirulaClip { display: none; }
+/* they dim and fade with the controls bar (viewer.css .sse-controlsWrap) */
+.sse-viewer .sse-ui > :is(.spirulaClip, .spirulaViewCube) { transition: opacity .5s ease-out; }
+.sse-viewer .sse-ui:has(> .sse-controlsWrap.sse-dimmed) > :is(.spirulaClip, .spirulaViewCube) { opacity: .4; }
+.sse-viewer .sse-ui:has(> .sse-controlsWrap.sse-faded-out) > :is(.spirulaClip, .spirulaViewCube) { visibility: hidden; opacity: 0; transition: visibility 0s .5s, opacity .5s ease-out; }
+/* but not while in use: the viewer's timer only sees the bar, and a drag keeps :hover */
+.sse-viewer .sse-ui:has(> .sse-controlsWrap) > :is(.spirulaClip, .spirulaViewCube):is(:hover, :focus-within) { visibility: visible; opacity: 1; transition: opacity .5s ease-out; }
+/* the measurements too, over the scene rather than in .sse-ui; the bar stays while measuring */
+.sse-viewer .sse-sceneLayer > :is(.spirulaMeasureOverlay, .spirulaMeasureLabels) { transition: opacity .5s ease-out; }
+.sse-viewer:has(> .sse-ui > .sse-controlsWrap.sse-dimmed) .sse-sceneLayer > :is(.spirulaMeasureOverlay, .spirulaMeasureLabels) { opacity: .4; }
+.sse-viewer:has(> .sse-ui > .sse-controlsWrap.sse-faded-out) .sse-sceneLayer > :is(.spirulaMeasureOverlay, .spirulaMeasureLabels) { visibility: hidden; opacity: 0; transition: visibility 0s .5s, opacity .5s ease-out; }
+/* and not over the loading screen */
+.sse-viewer .sse-ui:has(> .sse-loadingWrap:not(.sse-hidden)) > :is(.spirulaClip, .spirulaViewCube) { display: none; }
+.sse-viewer .spirulaClipTrack { position: relative; height: 100%; cursor: pointer; }
+.sse-viewer .spirulaClipTrack::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; transform: translateX(-50%); border-radius: 2px; background-color: rgba(217, 217, 217, .3); }
+.sse-viewer .spirulaClipSpan { position: absolute; left: 50%; width: 4px; transform: translateX(-50%); border-radius: 2px; background-color: #d9d9d9; }
+.sse-viewer .spirulaClipHandle { position: absolute; left: 50%; width: 16px; height: 16px; transform: translate(-50%, -50%); border-radius: 50%; background-color: var(--sse-accent); outline: none; }
+/* the timeline's handle as these */
+.sse-viewer .sse-controlsWrap > .sse-timelineContainer > .sse-handle { width: 16px; height: 16px; border: none; background-color: var(--sse-accent); }
+/* Eye height shares the walk button without changing the toolbar width. */
+.sse-viewer .spirulaHeightGroup { position: relative; }
+.sse-viewer .spirulaHeight { position: absolute; bottom: calc(100% + 8px); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 12px; box-sizing: border-box; width: 72px; height: 200px; padding: 10px 0 18px; border: 1px solid rgba(255, 255, 255, .08); border-radius: 16px; background-color: color-mix(in srgb, var(--sse-bkg) 50%, transparent); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); touch-action: none; }
+.sse-viewer .spirulaHeight > .spirulaHeightValue { color: var(--sse-text-light); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; cursor: default; }
+.sse-viewer .spirulaHeight > .spirulaClipTrack { flex: 1; width: 100%; }
+.sse-viewer .sse-ui:has(> .sse-settingsPanel:not(.sse-hidden), > .sse-controlsHint:not(.sse-hidden)) .spirulaHeight { display: none; }
+.sse-viewer .spirulaClipHandle::after { content: ''; position: absolute; inset: -10px; }
+.sse-viewer .spirulaClipHandle:focus-visible { outline: 2px solid var(--sse-accent); outline-offset: 2px; }
+/* the editor's view cube (#view-cube-container) in the top left corner, on a disc as XGRIDS' with the glass of the settings panel */
+.sse-viewer .sse-ui > .spirulaViewCube { position: absolute; left: max(16px, env(safe-area-inset-left)); top: max(16px, env(safe-area-inset-top)); width: 88px; height: 88px; box-sizing: border-box; border: 1px solid rgba(255, 255, 255, .08); border-radius: 50%; background-color: color-mix(in srgb, var(--sse-bkg) 50%, transparent); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); pointer-events: none; }
+.sse-viewer .spirulaViewCube svg { position: absolute; left: -1px; top: -1px; overflow: visible; }
+.sse-viewer .spirulaViewCube line { stroke: rgba(255, 255, 255, .55); stroke-width: 1.5; }
+.sse-viewer .spirulaViewCube circle.negative { opacity: .45; }
+.sse-viewer .spirulaViewCube circle { pointer-events: all; cursor: pointer; }
+.sse-viewer .spirulaViewCube text { pointer-events: none; }
+/* the 360 photos (panorama.js): their canvas between the scene and the interface, which takes no input */
+.sse-viewer > canvas.spirulaPanorama { pointer-events: none; visibility: hidden; }
+.sse-viewer .sse-annotation-hotspot.spirulaPanoramaHere { visibility: hidden !important; }
+.sse-viewer .spirulaPano:focus-visible { outline: 2px solid var(--sse-accent); outline-offset: 2px; }
+.sse-viewer .sse-controlsWrap > .sse-buttonsContainer .spirulaPano:disabled { opacity: .4; cursor: default; }
+.sse-viewer .spirulaHotspotToggle:focus-visible { outline: 2px solid var(--sse-accent); outline-offset: 2px; }
+.sse-viewer .sse-controlsWrap > .sse-buttonsContainer .spirulaHotspotToggle:disabled { opacity: .4; cursor: default; }
+.sse-viewer .sse-controlsWrap > .sse-buttonsContainer .spirulaPointsButton:disabled { opacity: .4; cursor: default; }
+.sse-viewer .sse-controlsWrap > .sse-buttonsContainer .spirulaHotspotToggle.sse-toggle.sse-left { border-radius: 4px; }
+/* a phone is too narrow for every group: the last ones wrap to a second row, at the right */
+@media (max-width: 480px) {
+    .sse-viewer .sse-controlsWrap > .sse-buttonsContainer { flex-wrap: wrap; justify-content: flex-end; }
+    /* viewer.css puts them a one-row bar above the bottom */
+    .sse-viewer .sse-ui > :is(.sse-settingsPanel, .sse-controlsHint) { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 112px); }
+}
